@@ -4,7 +4,7 @@ terraform {
     organization = "7tv"
 
     workspaces {
-      prefix = "seventv-image-processor-"
+      prefix = "seventv-emotesearch-"
     }
   }
 }
