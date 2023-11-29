@@ -77,6 +77,10 @@ func sync() error {
 		return err
 	}
 
+	docs := []map[string]interface{}{}
+
+	batchSize := 0
+
 	for cur.Next(context.Background()) {
 		var emote struct {
 			ID       primitive.ObjectID `bson:"_id"`
@@ -85,10 +89,11 @@ func sync() error {
 			Versions []struct {
 				State struct {
 					ChannelCount int64 `bson:"channel_count"`
+					Listed       bool  `bson:"listed"`
+					Personal     bool  `bson:"allow_personal"`
 				} `bson:"state"`
 				CreatedAt time.Time `bson:"created_at"`
 			} `bson:"versions"`
-			Flags int32 `bson:"flags"`
 		}
 		err := cur.Decode(&emote)
 		if err != nil {
@@ -99,28 +104,44 @@ func sync() error {
 		channelCount := 0
 		createdAt := time.Now()
 
+		listed, personal := false, false
+
 		for _, version := range emote.Versions {
 			channelCount += int(version.State.ChannelCount)
 
 			if createdAt.Sub(version.CreatedAt) > 0 {
 				createdAt = version.CreatedAt
 			}
+
+			if version.State.Listed {
+				listed = true
+			}
+			if version.State.Personal {
+				personal = true
+			}
 		}
 
-		doc := []map[string]interface{}{
-			{
-				"id":            emote.ID.Hex(),
-				"name":          emote.Name,
-				"tags":          emote.Tags,
-				"channel_count": channelCount,
-				"created_at":    createdAt,
-				"flags":         emote.Flags,
-			},
+		doc := map[string]interface{}{
+			"id":            emote.ID.Hex(),
+			"name":          emote.Name,
+			"tags":          emote.Tags,
+			"channel_count": channelCount,
+			"created_at":    createdAt.Unix(),
+			"listed":        listed,
+			"personal":      personal,
 		}
 
-		_, err = index.UpdateDocuments(doc)
-		if err != nil {
-			return err
+		docs = append(docs, doc)
+		batchSize++
+
+		if batchSize > 100 {
+			_, err = index.UpdateDocuments(docs)
+			if err != nil {
+				return err
+			}
+
+			docs = []map[string]interface{}{}
+			batchSize = 0
 		}
 	}
 
