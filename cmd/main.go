@@ -91,6 +91,7 @@ func sync() error {
 					ChannelCount int64 `bson:"channel_count"`
 					Listed       bool  `bson:"listed"`
 					Personal     bool  `bson:"allow_personal"`
+					Lifecycle    int32 `bson:"lifecycle"`
 				} `bson:"state"`
 				CreatedAt time.Time `bson:"created_at"`
 			} `bson:"versions"`
@@ -103,6 +104,7 @@ func sync() error {
 
 		channelCount := 0
 		createdAt := time.Now()
+		var lifecycle int32
 
 		listed, personal := false, false
 
@@ -119,6 +121,10 @@ func sync() error {
 			if version.State.Personal {
 				personal = true
 			}
+
+			if version.State.Lifecycle == 3 {
+				lifecycle = version.State.Lifecycle
+			}
 		}
 
 		doc := map[string]interface{}{
@@ -129,6 +135,7 @@ func sync() error {
 			"created_at":    createdAt.Unix(),
 			"listed":        listed,
 			"personal":      personal,
+			"lifecycle":     lifecycle,
 		}
 
 		docs = append(docs, doc)
