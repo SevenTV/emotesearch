@@ -13,9 +13,9 @@ resource "kubernetes_secret" "app" {
 
   data = {
     "config.yaml" = templatefile("${path.module}/config.template.yaml", {
-      mongo_uri        = var.infra.mongodb_uri
-      mongo_username   = var.infra.mongodb_user_app.username
-      mongo_password   = var.infra.mongodb_user_app.password
+      mongo_uri        = local.infra.mongodb_uri
+      mongo_username   = local.infra.mongodb_user_app.username
+      mongo_password   = local.infra.mongodb_user_app.password
       mongo_database   = "7tv"
       mongo_collection = "emotes"
       meili_url        = "http://meilisearch.database.svc.cluster.local:7700"
