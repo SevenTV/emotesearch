@@ -88,7 +88,7 @@ func sync() error {
 				} `bson:"state"`
 				CreatedAt time.Time `bson:"created_at"`
 			} `bson:"versions"`
-			Flags string `bson:"flags"`
+			Flags int32 `bson:"flags"`
 		}
 		err := cur.Decode(&emote)
 		if err != nil {
@@ -114,7 +114,7 @@ func sync() error {
 				"tags":          emote.Tags,
 				"channel_count": channelCount,
 				"created_at":    createdAt,
-				"flags":         channelCount,
+				"flags":         emote.Flags,
 			},
 		}
 
