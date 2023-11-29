@@ -84,8 +84,6 @@ jobs:
     name: API Deploy Validation
     needs: ci
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
     defaults:
       run:
         working-directory: ./terraform
