@@ -13,7 +13,7 @@ require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/fatih/color v1.14.1 // indirect
 	github.com/goccy/go-yaml v1.11.2 // indirect
-	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
+	github.com/golang-jwt/jwt/v4 v4.5.1 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/gookit/color v1.5.4 // indirect
 	github.com/gookit/goutil v0.6.14 // indirect
